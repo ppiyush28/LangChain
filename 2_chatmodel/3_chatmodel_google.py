@@ -10,3 +10,4 @@ llm = ChatGoogleGenerativeAI(
 
 response = llm.invoke("What is the capital of France?")
 print(response)
+print(response.content)
