@@ -9,3 +9,5 @@ model = ChatHuggingFace(llm=llm)
 
 response = model.invoke("What is the capital of France?")
 print(response)
+
+
