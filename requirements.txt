@@ -5,3 +5,5 @@ langchain_anthropic
 langchain_google_genai
 langchain_huggingface
 sentence-transformers
+pydantic
+email-validator
