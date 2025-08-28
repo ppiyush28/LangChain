@@ -1,0 +1,59 @@
+from langchain_openai import ChatOpenAI
+from langchain_anthropic import ChatAnthropic
+from langchain_google_genai import ChatGoogleGenerativeAI
+from dotenv import load_dotenv
+from langchain_core.prompts import PromptTemplate
+from langchain_core.output_parsers import StrOutputParser
+from langchain.schema.runnable import RunnableParallel
+
+load_dotenv()
+
+chatopenai = ChatOpenAI()
+chatanthropic = ChatAnthropic(model_name='claude-3-7-sonnet-20250219')
+
+google_model = ChatGoogleGenerativeAI(
+    model="gemini-1.5-flash",
+    temperature=0.2,
+    max_tokens=10,
+    #seed=1,
+    top_p=0.9,
+    top_k=40,
+
+)
+
+prompt1 = PromptTemplate(
+    template="genrate short and simple notes from following text \n {text}",
+    input_variables=["text"],
+)
+
+prompt2 = PromptTemplate(
+    template="genrate a detailed explanation from following text \n {text}",
+    input_variables=["text"],
+)
+
+prompt3 = PromptTemplate(
+    template="merge provided notes and quiz into snlge document and summarize the following text in engligh and french both  \n notes -> {notes} and  quiz -> {quiz}",
+    input_variables=["notes", "quiz"],
+)
+
+parser = StrOutputParser()
+
+parallel_chain = RunnableParallel(
+    {
+        "notes" : prompt1 | chatopenai | parser,
+        "quiz" : prompt2 | google_model | parser,
+    }
+)
+
+final_chain = parallel_chain | prompt3 | chatopenai | parser
+
+respone = final_chain.invoke(
+    {
+        "text": "Machine learning (ML) is a subset of artificial intelligence (AI) that focuses on the development of algorithms and statistical models that enable computers to perform specific tasks without explicit instructions. Instead, these systems learn from and make predictions or decisions based on data. The primary goal of machine learning is to enable computers to improve their performance on a task over time as they are exposed to more data.\n\nThere are several types of machine learning, including supervised learning, unsupervised learning, semi-supervised learning, and reinforcement learning. In supervised learning, the model is trained on a labeled dataset, meaning that each input comes with a corresponding output or label. The model learns to map inputs to outputs and can then make predictions on new, unseen data. Common algorithms used in supervised learning include linear regression, decision trees, and support vector machines.\n\nUnsupervised learning, on the other hand, involves training the model on an unlabeled dataset. The model must find patterns and relationships within the data without any guidance on what the output should be. Clustering and dimensionality reduction are common techniques used in unsupervised learning. Examples of algorithms include k-means clustering and principal component analysis (PCA).\n\nSemi-supervised learning combines elements of both supervised and unsupervised learning. In this approach, the model is trained on a small amount of labeled data along with a larger amount of unlabeled data. This can be particularly useful when obtaining labeled data is expensive or time-consuming.\n\nReinforcement learning is a type of machine learning where an agent learns to make decisions by taking actions in an environment to maximize some notion of cumulative reward. The agent receives feedback in the form of rewards or penalties based on its actions and uses this feedback to improve its future behavior. This approach is commonly used in robotics, game playing, and autonomous systems.\n\nMachine learning has numerous applications across various industries, including healthcare (e.g., disease diagnosis), finance (e.g., fraud detection), marketing (e.g., customer segmentation), and more. As the field continues to evolve, advancements in algorithms, computational power, and the availability of large datasets are driving further innovation and expanding the potential uses of machine learning."
+    }
+)
+
+print(respone)
+
+final_chain.get_graph().print_ascii()
+

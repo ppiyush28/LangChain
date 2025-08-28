@@ -7,3 +7,4 @@ langchain_huggingface
 sentence-transformers
 pydantic
 email-validator
+grandalf

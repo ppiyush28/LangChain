@@ -32,6 +32,8 @@ template1 = PromptTemplate(
 
 # final_result = chain.invoke({"place": "Indian"})
 # print("Parsed result:>>>", final_result)
+
+
 prompt = template1.invoke({"place":"Indian"})
 result = model.invoke(prompt)
 
