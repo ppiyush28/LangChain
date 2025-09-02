@@ -8,3 +8,8 @@ sentence-transformers
 pydantic
 email-validator
 grandalf
+langchain_community
+pypdf
+chromadb
+langchain-community
+langchain_chroma
